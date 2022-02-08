@@ -1,0 +1,14 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: kyverno
+  namespace: flux-system
+spec:
+  interval: 5m0s
+  ref:
+    semver: '>=1.0.0'
+  secretRef:
+    name: ssh-credentials
+  url: ssh://git@github.com/kyverno/kyverno
+
