@@ -10,5 +10,5 @@ spec:
     semver: '>=1.0.0'
   secretRef:
     name: flux-system
-  url: ssh://git@github.com/kyverno/kyverno
+  url: ssh://git@github.com/sasanbabai/kyverno
 
