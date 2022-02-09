@@ -18,4 +18,17 @@ spec:
     name: podinfo
   targetNamespace: apps
   timeout: 2m0s
+  patchesStrategicMerge:
+    - apiVersion: apps/v1
+      kind: Deployment
+      metadata:
+        name: podinfo
+      spec:
+        template:
+          spec:
+            securityContext:
+              runAsUser: 1000
+              runAsGroup: 3000
+              fsGroup: 2000
+      
 
