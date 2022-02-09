@@ -9,7 +9,7 @@ flux create kustomization infrastructure --source=flux-system --path=./infrastru
 
 mkdir -p infrastructure/kyverno
 
-flux create source git kyverno --url=ssh://git@github.com/kyverno/kyverno --tag-semver=">=1.0.0" --secret-ref=flux-system --interval=5m --export > infrastructure/kyverno/source.yaml
+flux create source git kyverno --url=ssh://git@github.com/sasanbabai/kyverno --tag-semver=">=1.0.0" --secret-ref=flux-system --interval=5m --export > infrastructure/kyverno/source.yaml
 
 git add -A && git commit -m "added keverno git repo" && git push origin main
 
@@ -24,3 +24,11 @@ flux get sources all
 flux reconcile kustomization flux-system --with-source
 
 flux get kustomizations
+
+flux create kustomization apps --depends-on=infrastructure --source=flux-system --path=./apps --prune=true --interval=5m --export > clusters/sbabai-01/apps.yaml
+
+mkdir -p apps/podinfo
+
+flux create tenant sbabai --with-namespace=apps --export > apps/sbabai.yaml
+
+flux create source git podinfo --namespace=apps --url=ssh://git@github.com/sasanbabai/podinfo --branch=master --secret-ref=flux-system --interval=5m --export > apps/podinfo/source.yaml
