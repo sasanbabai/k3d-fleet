@@ -24,7 +24,7 @@ flux get sources all
 
 flux reconcile source git flux-system
 
-flux create kustomization kyverno --source=kyvernom --path=./config/release --prune=true --interval=5m --export > infrastructure/kyverno/release.yaml
+flux create kustomization kyverno --source=kyverno --path=./config/release --prune=true --interval=5m --export > infrastructure/kyverno/release.yaml
 
 flux get sources all
 
