@@ -36,3 +36,5 @@ kubectl create secret generic apps --namespace=apps --from-file=/home/sbabai/.ss
 flux create source git podinfo --namespace=apps --url=ssh://git@github.com/sasanbabai/podinfo --branch=master --secret-ref=apps --interval=5m --export > apps/podinfo/source.yaml
 
 flux reconcile kustomization flux-system --with-source
+
+flux create kustomization podinfo --namespace=apps --target-namespace=apps --service-account=sbabai --source=podinfo --path=./kustomize --prune=true --interval=5m --health-check=Deployment/podinfo.apps --export > apps/podinfo/release.yaml
