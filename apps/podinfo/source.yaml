@@ -9,6 +9,6 @@ spec:
   ref:
     branch: master
   secretRef:
-    name: flux-system
+    name: apps
   url: ssh://git@github.com/sasanbabai/podinfo
 

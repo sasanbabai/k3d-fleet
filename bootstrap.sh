@@ -31,4 +31,8 @@ mkdir -p apps/podinfo
 
 flux create tenant sbabai --with-namespace=apps --export > apps/sbabai.yaml
 
-flux create source git podinfo --namespace=apps --url=ssh://git@github.com/sasanbabai/podinfo --branch=master --secret-ref=flux-system --interval=5m --export > apps/podinfo/source.yaml
+kubectl create secret generic apps --namespace=apps --from-file=/home/sbabai/.ssh/identity --from-file=/home/sbabai/.ssh/identity.pub --from-file=/home/sbabai/.ssh/known_hosts
+
+flux create source git podinfo --namespace=apps --url=ssh://git@github.com/sasanbabai/podinfo --branch=master --secret-ref=apps --interval=5m --export > apps/podinfo/source.yaml
+
+flux reconcile kustomization flux-system --with-source
