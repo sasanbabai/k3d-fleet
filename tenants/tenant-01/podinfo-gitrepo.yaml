@@ -1,0 +1,14 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta1
+kind: GitRepository
+metadata:
+  name: podinfo
+  namespace: tenant-01
+spec:
+  interval: 5m0s
+  ref:
+    branch: master
+  secretRef:
+    name: tenant-01
+  url: ssh://git@github.com/sasanbabai/podinfo
+
