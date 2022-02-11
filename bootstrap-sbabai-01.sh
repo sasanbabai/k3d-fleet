@@ -5,6 +5,8 @@ k3d cluster create fluxcd-01
 
 flux bootstrap github --owner=sasanbabai --repository=k3d-fleet --personal=true --private=false --branch=main --read-write-key --path=clusters/fluxcd-01
 
+git pull
+
 flux create kustomization infrastructure --source=flux-system --path=./infrastructure --prune=true --interval=5m --export > clusters/fluxcd-01/infrastructure.yaml
 
 mkdir -p infrastructure/kyverno
