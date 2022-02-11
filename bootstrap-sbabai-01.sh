@@ -39,12 +39,16 @@ mkdir -p tenants/tenant-01
 # create podinfo gitrepo in tenant-01 namespace
 flux create tenant tenant-01 --with-namespace=tenant-01 --export > tenants/tenant-01.yaml
 
+git add -A && git commit -m "added tenant-01" && git push origin main
+
+flux reconcile kustomization flux-system --with-source
+
 kubectl create secret generic tenant-01 --namespace=tenant-01 --from-file=/home/sbabai/.ssh/identity --from-file=/home/sbabai/.ssh/identity.pub --from-file=/home/sbabai/.ssh/known_hosts
 
 flux create source git podinfo --namespace=tenant-01 --url=ssh://git@github.com/sasanbabai/podinfo --branch=master --secret-ref=tenant-01 --interval=5m --export > tenants/tenant-01/podinfo-gitrepo.yaml
 
 flux create kustomization podinfo --namespace=tenant-01 --target-namespace=tenant-01 --service-account=tenant-01 --source=podinfo --path=./kustomize --prune=true --interval=5m --health-check=Deployment/podinfo.apps --export > tenants/tenant-01/podinfo-kustomiztion.yaml
 
-git add -A && git commit -m "added tenant-01" && git push origin main
+git add -A && git commit -m "installed podinfo on tenant-01" && git push origin main
 
 flux reconcile kustomization flux-system --with-source
