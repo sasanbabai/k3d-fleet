@@ -1,11 +1,11 @@
 export GITHUB_TOKEN=<your-github-access-token>
 export GITHUB_USER=<your-github-username>
 
-k config use-context k3d-sbabai-01
+k3d cluster create fluxcd-01
 
-flux bootstrap github --owner=sasanbabai --repository=k3d-fleet --personal=true --private=false --branch=main --read-write-key --path=clusters/sbabai-01
+flux bootstrap github --owner=sasanbabai --repository=k3d-fleet --personal=true --private=false --branch=main --read-write-key --path=clusters/fluxcd-01
 
-flux create kustomization infrastructure --source=flux-system --path=./infrastructure --prune=true --interval=5m --export > clusters/sbabai-01/infrastructure.yaml
+flux create kustomization infrastructure --source=flux-system --path=./infrastructure --prune=true --interval=5m --export > clusters/fluxcd-01/infrastructure.yaml
 
 mkdir -p infrastructure/kyverno
 
@@ -33,21 +33,20 @@ flux reconcile kustomization flux-system --with-source
 flux get kustomizations
 
 # kustomizations also allow you to define dependency trees (depends-on)
-flux create kustomization apps --depends-on=infrastructure --source=flux-system --path=./apps --prune=true --interval=5m --export > clusters/sbabai-01/apps.yaml
+flux create kustomization apps --depends-on=infrastructure --source=flux-system --path=./apps --prune=true --interval=5m --export > clusters/fluxcd-01/apps.yaml
 
-mkdir -p apps/podinfo
+mkdir -p tenants/tenant-01
 
-# create apps namespace
-# create sbabai service account
-# bind sbabai with cluster-admin in apps namespace
-# create podinfo gitrepo in apps namespace
-# patch podinfo to include security context
-flux create tenant sbabai --with-namespace=apps --export > apps/sbabai.yaml
+# create tenant-01 namespace
+# create tenant-01 service account
+# bind tenant-01 with cluster-admin in tenant-01 namespace
+# create podinfo gitrepo in tenant-01 namespace
+flux create tenant tenant-01 --with-namespace=tenant-01 --export > tenants/tenant-01.yaml
 
-kubectl create secret generic apps --namespace=apps --from-file=/home/sbabai/.ssh/identity --from-file=/home/sbabai/.ssh/identity.pub --from-file=/home/sbabai/.ssh/known_hosts
+kubectl create secret generic tenant-01 --namespace=tenant-01 --from-file=/home/sbabai/.ssh/identity --from-file=/home/sbabai/.ssh/identity.pub --from-file=/home/sbabai/.ssh/known_hosts
 
-flux create source git podinfo --namespace=apps --url=ssh://git@github.com/sasanbabai/podinfo --branch=master --secret-ref=apps --interval=5m --export > apps/podinfo/source.yaml
+flux create source git podinfo --namespace=tenant-01 --url=ssh://git@github.com/sasanbabai/podinfo --branch=master --secret-ref=tenant-01 --interval=5m --export > tenants/tenant-01/podinfo-repo.yaml
 
 flux reconcile kustomization flux-system --with-source
 
-flux create kustomization podinfo --namespace=apps --target-namespace=apps --service-account=sbabai --source=podinfo --path=./kustomize --prune=true --interval=5m --health-check=Deployment/podinfo.apps --export > apps/podinfo/release.yaml
+flux create kustomization podinfo --namespace=tenant-01 --target-namespace=tenant-01 --service-account=tenant-01 --source=podinfo --path=./kustomize --prune=true --interval=5m --health-check=Deployment/podinfo.apps --export > tenants/tenant-01/podinfo-kustomiztion.yaml
